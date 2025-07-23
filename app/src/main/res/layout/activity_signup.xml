@@ -21,7 +21,7 @@
         <EditText
             android:id="@+id/editTextTextEmailAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:ems="10"
             android:layout_marginTop="30dp"
             android:inputType="textEmailAddress"
@@ -30,7 +30,7 @@
         <EditText
             android:id="@+id/editTextTextPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="20dp"
             android:ems="10"
             android:inputType="textPassword"
@@ -39,7 +39,7 @@
         <EditText
             android:id="@+id/nameEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="20dp"
             android:hint="이름 (닉네임)"
             android:inputType="textPersonName"
@@ -48,7 +48,7 @@
         <EditText
             android:id="@+id/ageEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="20dp"
             android:hint="나이"
             android:inputType="number" />
@@ -56,7 +56,7 @@
         <!-- 성별 라디오버튼 추가 -->
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:text="성별"
             android:layout_marginTop="20dp"
             android:textSize="16sp" />
