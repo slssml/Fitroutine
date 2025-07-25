@@ -33,13 +33,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_video -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frame, SearchFragment())
+                        .replace(R.id.main_frame, VideoFragment())
                         .commit()
                     true
                 }
                 R.id.nav_mypage -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frame, ProfileFragment())
+                        .replace(R.id.main_frame, MypageFragment())
                         .commit()
                     true
                 }
