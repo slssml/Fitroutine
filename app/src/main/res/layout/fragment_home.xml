@@ -10,6 +10,7 @@
     android:paddingBottom="50dp"
     tools:context=".HomeFragment">
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -26,7 +27,7 @@
                 android:id="@+id/greetingText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="민주님, 오늘 하루도 파이팅!"
+                android:text="님, 오늘 하루도 파이팅!"
                 android:textSize="25dp"
                 android:textStyle="bold" />
 

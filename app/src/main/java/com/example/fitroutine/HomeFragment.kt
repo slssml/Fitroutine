@@ -1,6 +1,7 @@
 package com.example.fitroutine
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,6 @@ import java.util.Date
 import java.util.Locale
 
 
-@Suppress("UNREACHABLE_CODE")
 class HomeFragment : Fragment() {
 
     private lateinit var greetingText: TextView
@@ -36,16 +36,14 @@ class HomeFragment : Fragment() {
     private var showingAll = false
     private lateinit var routineAdapter: MyRoutineAdapter
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
-    }
+    private val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
+    private val today: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // View 초기화
         greetingText = view.findViewById(R.id.greetingText)
         weightInput = view.findViewById(R.id.weightInput)
         addWeightButton = view.findViewById(R.id.addWeightButton)
@@ -61,18 +59,28 @@ class HomeFragment : Fragment() {
 
         updateRoutineList()
 
-        //더보기 버튼 눌렀을 때
+        // 사용자 이름 불러와서 인사말 출력
+        auth.currentUser?.uid?.let { uid ->
+            db.collection("users").document(uid).get()
+                .addOnSuccessListener { document ->
+                    val name = document.getString("name")
+                    greetingText.text = "${name}님, 오늘 하루도 파이팅!"
+                }
+                .addOnFailureListener {
+                    Log.e("Firebase", "닉네임 불러오기 실패", it)
+                }
+        }
+
+        // 더보기 버튼
         showMoreBtn.setOnClickListener {
             showingAll = !showingAll
             updateRoutineList()
             showMoreBtn.text = if (showingAll) "접기" else "더보기"
         }
 
-
-        //체중 저장 버튼 눌렀을 때
+        // 체중 저장 버튼
         addWeightButton.setOnClickListener {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val uid = auth.currentUser?.uid ?: return@setOnClickListener
             val weight = weightInput.text.toString().toFloatOrNull()
 
             if (weight == null) {
@@ -80,14 +88,11 @@ class HomeFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val data = mapOf(
-                "weight" to weightInput.text.toString().toFloat()
-            )
+            val data = mapOf("weight" to weight)
 
-            FirebaseFirestore.getInstance()
-                .collection("users").document(uid)
+            db.collection("users").document(uid)
                 .collection("dailyRecords").document(today)
-                .set(data, SetOptions.merge())  // weight 필드만 병합 저장
+                .set(data, SetOptions.merge())
                 .addOnSuccessListener {
                     Toast.makeText(context, "체중 저장 완료!", Toast.LENGTH_SHORT).show()
                 }
@@ -96,10 +101,9 @@ class HomeFragment : Fragment() {
                 }
         }
 
-        //운동 저장 버튼 눌렀을 때
+        // 운동 저장 버튼
         addExerciseButton.setOnClickListener {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val uid = auth.currentUser?.uid ?: return@setOnClickListener
             val name = exerciseNameEditText.text.toString()
             val time = exerciseTimeEditText.text.toString()
 
@@ -113,18 +117,15 @@ class HomeFragment : Fragment() {
                 "exerciseTime" to time
             )
 
-            FirebaseFirestore.getInstance()
-                .collection("users").document(uid)
+            db.collection("users").document(uid)
                 .collection("dailyRecords").document(today)
                 .update("exercises", FieldValue.arrayUnion(data))
                 .addOnSuccessListener {
                     Toast.makeText(context, "운동 기록 추가 완료!", Toast.LENGTH_SHORT).show()
                 }
-                .addOnFailureListener { e ->
-                    // 만약 문서가 존재하지 않아 update 실패한 경우, 새로 만들기
+                .addOnFailureListener {
                     val newData = mapOf("exercises" to listOf(data))
-                    FirebaseFirestore.getInstance()
-                        .collection("users").document(uid)
+                    db.collection("users").document(uid)
                         .collection("dailyRecords").document(today)
                         .set(newData, SetOptions.merge())
                         .addOnSuccessListener {
@@ -135,20 +136,12 @@ class HomeFragment : Fragment() {
                         }
                 }
         }
-
-
-
-
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
+    ): View = inflater.inflate(R.layout.fragment_home, container, false)
 
     private fun updateRoutineList() {
         val displayList = if (showingAll) allRoutines else allRoutines.take(3)
@@ -156,15 +149,8 @@ class HomeFragment : Fragment() {
         showMoreBtn.visibility = if (allRoutines.size > 3) View.VISIBLE else View.GONE
     }
 
-
     companion object {
-
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-
-                }
-            }
+        fun newInstance(param1: String, param2: String) = HomeFragment()
     }
 }
