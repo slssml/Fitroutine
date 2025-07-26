@@ -38,7 +38,7 @@
                 <!-- 마이핏루틴 제목 -->
 
                 <ImageView
-                    android:layout_width="25dp"
+                    android:layout_width="24dp"
                     android:layout_height="31dp"
                     android:layout_marginTop="20dp"
                     android:src="@drawable/routine" />

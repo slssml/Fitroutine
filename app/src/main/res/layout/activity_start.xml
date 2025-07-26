@@ -10,15 +10,16 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        app:srcCompat="@mipmap/logo_foreground" />
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        app:srcCompat="@drawable/fitness" />
 
     <TextView
         android:id="@+id/appTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fit Routine"
+        android:textStyle="bold"
         android:textSize="24sp"
         android:layout_marginTop="16dp"/>
 
