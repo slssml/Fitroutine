@@ -15,7 +15,7 @@ data class Routine(
     val id: String = UUID.randomUUID().toString(),
     val time: String = "",
     val days: List<String> = emptyList(),
-    val name: String = ""
+    val routineName: String = ""   // name -> routineName으로 변경
 )
 
 class MyRoutineFragment : Fragment() {
@@ -65,7 +65,7 @@ class MyRoutineFragment : Fragment() {
 
     // 루틴 정보를 문자열로 변환
     private fun formatRoutine(routine: Routine): String {
-        return "[${routine.name}] ${routine.time} (${routine.days.joinToString(", ")})"
+        return "[${routine.routineName}] ${routine.time} (${routine.days.joinToString(", ")})"
     }
 
     // 루틴 추가 다이얼로그 띄우기
@@ -101,7 +101,7 @@ class MyRoutineFragment : Fragment() {
             }
 
             val selectedDays = checkBoxes.filter { it.isChecked }.map { it.text.toString() }
-            val name = editName.text.toString().trim()
+            val routineName = editName.text.toString().trim()
 
             val cal = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, hour)
@@ -109,7 +109,7 @@ class MyRoutineFragment : Fragment() {
             }
             val time = SimpleDateFormat("a h:mm", Locale.getDefault()).format(cal.time)
 
-            val routine = Routine(time = time, days = selectedDays, name = name)
+            val routine = Routine(time = time, days = selectedDays, routineName = routineName)
             routineList.add(routine)
 
             saveRoutineToFirebase(routine)
@@ -128,7 +128,7 @@ class MyRoutineFragment : Fragment() {
     private fun updateListView() {
         adapter.clear()
 
-        val visibleRoutines = routineList.filter { it.name.isNotEmpty() }
+        val visibleRoutines = routineList.filter { it.routineName.isNotEmpty() }
 
         val timeFormat = SimpleDateFormat("a h:mm", Locale.getDefault())
         val sortedRoutines = visibleRoutines.sortedWith(compareBy { routine ->
@@ -186,7 +186,7 @@ class MyRoutineFragment : Fragment() {
                 routineList.clear()
                 for (doc in snapshot.documents) {
                     val routine = doc.toObject(Routine::class.java)
-                    if (routine != null && routine.name.isNotEmpty()) {
+                    if (routine != null && routine.routineName.isNotEmpty()) {
                         routineList.add(routine)
                     }
                 }

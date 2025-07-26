@@ -10,7 +10,6 @@
     android:paddingBottom="50dp"
     tools:context=".HomeFragment">
 
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -28,15 +27,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="님, 오늘 하루도 파이팅!"
-                android:textSize="25dp"
+                android:textSize="25sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <!-- 마이핏루틴 제목 -->
 
+                <!-- 마이핏루틴 제목 -->
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="31dp"
@@ -51,6 +50,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
+
             <!-- 루틴 목록 -->
             <LinearLayout
                 android:id="@+id/routineList"
@@ -59,9 +59,10 @@
                 android:orientation="vertical" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/routineRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            android:id="@+id/routineRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
 
             <!-- 더보기 버튼 -->
             <Button
@@ -71,13 +72,13 @@
                 android:text="더보기"
                 android:visibility="gone"
                 android:layout_marginTop="8dp"
-                android:backgroundTint="#6495ED"/>
-
+                android:backgroundTint="#6495ED" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <!-- 오늘의 목표 -->
                 <ImageView
                     android:layout_width="25dp"
@@ -94,18 +95,17 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="80% 달성!"
-                android:textSize="15dp"
-                android:textStyle="" />
+                android:textSize="15sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <!-- 오늘의 체중 기록 -->
                 <ImageView
                     android:layout_width="25dp"
@@ -126,16 +126,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <EditText
                     android:id="@+id/weightInput"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="예: 65.3" />
+                    android:hint="예: 65.3"
+                    android:inputType="numberDecimal" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="kg"
-                    android:textSize="15dp"/>
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <Button
@@ -143,12 +145,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="저장"
-                android:backgroundTint="#6495ED"/>
+                android:backgroundTint="#6495ED" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <!-- 오늘의 운동 기록 -->
                 <ImageView
                     android:layout_width="25dp"
@@ -165,27 +168,28 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-
             <EditText
                 android:id="@+id/exerciseNameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="예: 하체 폭발 루틴" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <EditText
                     android:id="@+id/exerciseTimeEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="예: 30"
                     android:inputType="number" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="분"
-                    android:textSize="15dp"/>
-
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <Button
@@ -193,7 +197,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="저장"
-                android:backgroundTint="#6495ED"/>
+                android:backgroundTint="#6495ED" />
 
         </LinearLayout>
     </ScrollView>
