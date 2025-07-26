@@ -43,7 +43,8 @@
             android:layout_marginTop="20dp"
             android:hint="이름 (닉네임)"
             android:inputType="textPersonName"
-            android:imeOptions="flagNoExtractUi"/>
+            android:imeOptions="flagNoExtractUi"
+            />
 
         <EditText
             android:id="@+id/ageEditText"

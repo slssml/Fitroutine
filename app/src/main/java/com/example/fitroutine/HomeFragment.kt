@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 class HomeFragment : Fragment() {
 
     private lateinit var greetingText: TextView
@@ -32,7 +31,7 @@ class HomeFragment : Fragment() {
     private lateinit var routineRecyclerView: RecyclerView
     private lateinit var showMoreBtn: Button
 
-    private val allRoutines = mutableListOf("마이루틴 1", "마이루틴 2", "마이루틴 3", "마이루틴 4", "마이루틴 5")
+    private val routineList = mutableListOf<String>()
     private var showingAll = false
     private lateinit var routineAdapter: MyRoutineAdapter
 
@@ -57,7 +56,7 @@ class HomeFragment : Fragment() {
         routineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         routineRecyclerView.adapter = routineAdapter
 
-        updateRoutineList()
+        updateRoutineList() // 루틴 업데이트 호출
 
         // 사용자 이름 불러와서 인사말 출력
         auth.currentUser?.uid?.let { uid ->
@@ -66,12 +65,9 @@ class HomeFragment : Fragment() {
                     val name = document.getString("name")
                     greetingText.text = "${name}님, 오늘 하루도 파이팅!"
                 }
-                .addOnFailureListener {
-                    Log.e("Firebase", "닉네임 불러오기 실패", it)
-                }
         }
 
-        // 더보기 버튼
+        // 더보기 버튼 클릭 처리
         showMoreBtn.setOnClickListener {
             showingAll = !showingAll
             updateRoutineList()
@@ -143,14 +139,39 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_home, container, false)
 
+    // Firestore에서 루틴 불러와서 화면에 표시
     private fun updateRoutineList() {
-        val displayList = if (showingAll) allRoutines else allRoutines.take(3)
-        routineAdapter.updateList(displayList)
-        showMoreBtn.visibility = if (allRoutines.size > 3) View.VISIBLE else View.GONE
+        val uid = auth.currentUser?.uid ?: return
+
+        db.collection("users").document(uid).collection("routines")
+            .get()
+            .addOnSuccessListener { result ->
+                routineList.clear()
+                for (doc in result) {
+                    val routineName = doc.getString("routineName") ?: ""
+                    val time = doc.getString("time") ?: ""
+                    val days = doc.get("days") as? List<String> ?: emptyList()
+                    routineList.add("$routineName / $time / ${days.joinToString(", ")}")
+                }
+                // 로그로 출력해서 실제 리스트 확인
+                Log.d("HomeFragment", "Loaded routines: $routineList")
+
+                val displayList = if (showingAll) routineList else routineList.take(3)
+                routineAdapter.updateList(displayList)
+
+                showMoreBtn.visibility = if (routineList.size > 3) View.VISIBLE else View.GONE
+            }
+            .addOnFailureListener {
+                Log.e("HomeFragment", "Failed to load routines", it)
+            }
     }
+
 
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) = HomeFragment()
     }
 }
+
+
+
