@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -12,19 +14,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class Routine(
-    val id: String = UUID.randomUUID().toString(),
-    val time: String = "",
-    val days: List<String> = emptyList(),
-    val routineName: String = ""   // name -> routineName으로 변경
+    val id: String = UUID.randomUUID().toString(),       // 고유 ID 자동 생성
+    val time: String = "",                               // 시간
+    val days: List<String> = emptyList(),                // 선택 요일
+    val routineName: String = ""                         // 루틴 이름
 )
 
 class MyRoutineFragment : Fragment() {
 
-    private lateinit var routineListView: ListView
-    private lateinit var emptyTextView: TextView
+    private lateinit var routineRecyclerView: RecyclerView
     private lateinit var addRoutineButton: Button
-    private val routineList = mutableListOf<Routine>()
-    private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var emptyTextView: TextView
+
+    private val routineList = mutableListOf<Routine>()    // 루틴 리스트
+    private lateinit var adapter: MyRoutineAdapter        // 어댑터
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,40 +35,23 @@ class MyRoutineFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_my_routine, container, false)
 
-        routineListView = view.findViewById(R.id.listViewRoutines)
-        emptyTextView = view.findViewById(R.id.emptyTextView)
+        routineRecyclerView = view.findViewById(R.id.recyclerViewRoutines)
         addRoutineButton = view.findViewById(R.id.AddRoutine)
+        emptyTextView = view.findViewById(R.id.emptyTextView)
 
-        adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, mutableListOf())
-        routineListView.adapter = adapter
+        adapter = MyRoutineAdapter(
+            routineList,
+            showCheckbox = false)
 
-        loadRoutinesFromFirebase()
+        routineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        routineRecyclerView.adapter = adapter
 
         addRoutineButton.setOnClickListener {
             showAddRoutineDialog()
         }
 
-        routineListView.setOnItemLongClickListener { _, _, position, _ ->
-            val routine = routineList.getOrNull(position)
-            if (routine != null) {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("루틴 삭제")
-                    .setMessage("정말 삭제하시겠습니까?")
-                    .setPositiveButton("삭제") { _, _ ->
-                        deleteRoutine(routine)
-                    }
-                    .setNegativeButton("취소", null)
-                    .show()
-            }
-            true
-        }
-
+        loadRoutinesFromFirebase()
         return view
-    }
-
-    // 루틴 정보를 문자열로 변환
-    private fun formatRoutine(routine: Routine): String {
-        return "[${routine.routineName}] ${routine.time} (${routine.days.joinToString(", ")})"
     }
 
     // 루틴 추가 다이얼로그 띄우기
@@ -111,9 +97,9 @@ class MyRoutineFragment : Fragment() {
 
             val routine = Routine(time = time, days = selectedDays, routineName = routineName)
             routineList.add(routine)
-
             saveRoutineToFirebase(routine)
-            updateListView()
+
+            adapter.notifyDataSetChanged()
             dialog.dismiss()
         }
 
@@ -124,37 +110,9 @@ class MyRoutineFragment : Fragment() {
         dialog.show()
     }
 
-    // 리스트뷰 갱신
-    private fun updateListView() {
-        adapter.clear()
-
-        val visibleRoutines = routineList.filter { it.routineName.isNotEmpty() }
-
-        val timeFormat = SimpleDateFormat("a h:mm", Locale.getDefault())
-        val sortedRoutines = visibleRoutines.sortedWith(compareBy { routine ->
-            try {
-                timeFormat.parse(routine.time)
-            } catch (e: Exception) {
-                null
-            }
-        })
-
-        if (sortedRoutines.isNotEmpty()) {
-            adapter.addAll(sortedRoutines.map { formatRoutine(it) })
-            emptyTextView.visibility = View.GONE
-            routineListView.visibility = View.VISIBLE
-        } else {
-            emptyTextView.visibility = View.VISIBLE
-            routineListView.visibility = View.GONE
-        }
-
-        adapter.notifyDataSetChanged()
-    }
-
-    // 파이어베이스에 저장
+    // Firebase에 루틴 저장
     private fun saveRoutineToFirebase(routine: Routine) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
         Firebase.firestore.collection("users")
             .document(uid)
             .collection("routines")
@@ -162,39 +120,23 @@ class MyRoutineFragment : Fragment() {
             .set(routine)
     }
 
-    // 파이어베이스에서 삭제
-    private fun deleteRoutine(routine: Routine) {
-        routineList.remove(routine)
-        updateListView()
-
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        Firebase.firestore.collection("users")
-            .document(uid)
-            .collection("routines")
-            .document(routine.id)
-            .delete()
-    }
-
-    // 파이어베이스에서 루틴 불러오기
+    // Firebase에서 루틴 불러오기
     private fun loadRoutinesFromFirebase() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         Firebase.firestore.collection("users")
             .document(uid)
             .collection("routines")
             .get()
-            .addOnSuccessListener { snapshot ->
+            .addOnSuccessListener { result ->
                 routineList.clear()
-                for (doc in snapshot.documents) {
-                    val routine = doc.toObject(Routine::class.java)
-                    if (routine != null && routine.routineName.isNotEmpty()) {
-                        routineList.add(routine)
-                    }
+                for (document in result) {
+                    val routine = document.toObject(Routine::class.java)
+                    routineList.add(routine)
                 }
-                updateListView()
+                adapter.notifyDataSetChanged()
+
+                emptyTextView.visibility = if (routineList.isEmpty()) View.VISIBLE else View.GONE
             }
     }
 }
-
-
-
 
