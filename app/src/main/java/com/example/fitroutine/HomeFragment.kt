@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,10 +20,16 @@ class HomeFragment : Fragment() {
     private lateinit var showMoreBtn: Button
     private lateinit var achievementRateTextView: TextView
 
+    private lateinit var weightInput: EditText
+    private lateinit var addWeightButton: Button
+    private lateinit var exerciseNameEditText: EditText
+    private lateinit var exerciseTimeEditText: EditText
+    private lateinit var addExerciseButton: Button
+
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
-    // 오늘 날짜와 요일 구하기
+    // 오늘 날짜와 요일
     private val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
     private val todayKoreanDay = getTodayKoreanDay()
 
@@ -48,7 +52,14 @@ class HomeFragment : Fragment() {
         showMoreBtn = view.findViewById(R.id.showMoreBtn)
         achievementRateTextView = view.findViewById(R.id.achievementRateTextView)
 
-        // 어댑터 초기화 (체크박스 보임)
+        weightInput = view.findViewById(R.id.weightInput)
+        addWeightButton = view.findViewById(R.id.addWeightButton)
+
+        exerciseNameEditText = view.findViewById(R.id.exerciseNameEditText)
+        exerciseTimeEditText = view.findViewById(R.id.exerciseTimeEditText)
+        addExerciseButton = view.findViewById(R.id.addExerciseButton)
+
+        // 루틴 어댑터 초기화
         routineAdapter = MyRoutineAdapter(
             routineList,
             checkedMap = mutableMapOf(),
@@ -70,21 +81,33 @@ class HomeFragment : Fragment() {
                 }
         }
 
-        // 버튼 초기 텍스트 설정
+        // 더보기 버튼 초기화 및 클릭 처리
         showMoreBtn.text = "더보기"
-
-        // 더보기 / 접기 토글 버튼 클릭 이벤트
         showMoreBtn.setOnClickListener {
             showingAll = !showingAll
             updateRoutineAdapterAndUI()
             showMoreBtn.text = if (showingAll) "접기" else "더보기"
         }
 
-        // 루틴 목록 불러오기 시작
+        // 체중 저장 버튼 클릭 시 처리
+        addWeightButton.setOnClickListener {
+            val weightStr = weightInput.text.toString()
+            val weight = weightStr.toDoubleOrNull() ?: return@setOnClickListener
+            saveWeightToFirestore(weight)
+        }
+
+        // 운동 기록 저장 버튼 클릭 시 처리
+        addExerciseButton.setOnClickListener {
+            val name = exerciseNameEditText.text.toString()
+            val time = exerciseTimeEditText.text.toString()
+            saveExerciseToFirestore(name, time)
+        }
+
+        // 루틴 목록 불러오기
         updateRoutineList()
     }
 
-    // Firestore에서 루틴 불러오기
+    // Firestore에서 루틴 목록 불러오기
     private fun updateRoutineList() {
         val uid = auth.currentUser?.uid ?: return
 
@@ -97,9 +120,6 @@ class HomeFragment : Fragment() {
                     if (routine != null) routineList.add(routine)
                 }
                 loadRoutineStatus(routineList)
-            }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "루틴 불러오기 실패: ${it.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -119,34 +139,21 @@ class HomeFragment : Fragment() {
                 }
                 updateRoutineAdapterAndUI()
             }
-            .addOnFailureListener {
-                checkedStatus.clear()
-                for (routine in routines) {
-                    checkedStatus[routine.id] = false
-                }
-                updateRoutineAdapterAndUI()
-            }
     }
 
-    // 어댑터에 데이터 적용하고 UI 갱신
+    // 어댑터에 데이터 적용 및 UI 갱신
     private fun updateRoutineAdapterAndUI() {
         val filteredList = if (showingAll) {
-            routineList   // 전체 루틴 보여줌
+            routineList
         } else {
-            routineList.filter { it.days.contains(todayKoreanDay) }  // 오늘 요일 루틴만 필터링
+            routineList.filter { it.days.contains(todayKoreanDay) }
         }
 
         routineAdapter.updateList(filteredList)
         routineAdapter.setCheckedMap(checkedStatus)
-
         updateAchievementRate(filteredList)
 
-        // 루틴 리스트가 비어있을 때만 버튼 숨김
         showMoreBtn.visibility = if (routineList.isEmpty()) View.GONE else View.VISIBLE
-
-        if (filteredList.isEmpty()) {
-            Toast.makeText(requireContext(), "오늘 루틴이 없습니다.", Toast.LENGTH_SHORT).show()
-        }
     }
 
     // 체크박스 상태 변경 시 Firestore에 저장
@@ -161,21 +168,69 @@ class HomeFragment : Fragment() {
             .addOnSuccessListener {
                 updateRoutineAdapterAndUI()
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "달성 상태 저장 실패", Toast.LENGTH_SHORT).show()
-            }
     }
 
-    // 달성률 계산 후 텍스트 업데이트
+    // 목표 달성률 계산 후 텍스트 업데이트
     private fun updateAchievementRate(todayRoutines: List<Routine>) {
         if (todayRoutines.isEmpty()) {
             achievementRateTextView.text = "목표 달성률: 0%"
             return
         }
-
         val completed = todayRoutines.count { checkedStatus[it.id] == true }
         val percent = (completed * 100) / todayRoutines.size
         achievementRateTextView.text = "목표 달성률: $percent%"
+    }
+
+    // 체중 Firestore 저장
+    private fun saveWeightToFirestore(weight: Double) {
+        val uid = auth.currentUser?.uid ?: return
+        val docRef = db.collection("users").document(uid)
+            .collection("dailyRecords").document(todayDate)
+
+        docRef.get()
+            .addOnSuccessListener { document ->
+                val data = document.data?.toMutableMap() ?: mutableMapOf()
+                data["weight"] = weight
+                docRef.set(data)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "체중 입력 완료", Toast.LENGTH_SHORT).show()
+                        weightInput.text.clear()
+                    }
+            }
+    }
+
+    // 운동 기록 Firestore 저장
+    private fun saveExerciseToFirestore(name: String, time: String) {
+        val uid = auth.currentUser?.uid ?: return
+        val docRef = db.collection("users").document(uid)
+            .collection("dailyRecords").document(todayDate)
+
+        val newExercise = mapOf(
+            "exerciseName" to name,
+            "exerciseTime" to time
+        )
+
+        docRef.get()
+            .addOnSuccessListener { document ->
+                val exercises = document.get("exercises") as? MutableList<Map<String, String>> ?: mutableListOf()
+                exercises.add(newExercise)
+                docRef.update("exercises", exercises)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "운동내역 입력 완료", Toast.LENGTH_SHORT).show()
+                        exerciseNameEditText.text.clear()
+                        exerciseTimeEditText.text.clear()
+                    }
+            }
+            .addOnFailureListener {
+                // 문서 없을 때 새로 만듦
+                val data = mapOf("exercises" to listOf(newExercise))
+                docRef.set(data)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "운동내역 입력 완료", Toast.LENGTH_SHORT).show()
+                        exerciseNameEditText.text.clear()
+                        exerciseTimeEditText.text.clear()
+                    }
+            }
     }
 
     // 오늘 요일 한글 반환
@@ -192,4 +247,5 @@ class HomeFragment : Fragment() {
         }
     }
 }
+
 
