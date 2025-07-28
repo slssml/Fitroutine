@@ -196,6 +196,20 @@ class HomeFragment : Fragment() {
                         Toast.makeText(requireContext(), "체중 입력 완료", Toast.LENGTH_SHORT).show()
                         weightInput.text.clear()
                     }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(requireContext(), "체중 입력 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                val data = mapOf("weight" to weight)
+                docRef.set(data)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "체중 입력 완료", Toast.LENGTH_SHORT).show()
+                        weightInput.text.clear()
+                    }
+                    .addOnFailureListener { e2 ->
+                        Toast.makeText(requireContext(), "체중 입력 실패: ${e2.message}", Toast.LENGTH_SHORT).show()
+                    }
             }
     }
 
@@ -220,15 +234,20 @@ class HomeFragment : Fragment() {
                         exerciseNameEditText.text.clear()
                         exerciseTimeEditText.text.clear()
                     }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(requireContext(), "운동내역 입력 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
             }
-            .addOnFailureListener {
-                // 문서 없을 때 새로 만듦
+            .addOnFailureListener { e ->
                 val data = mapOf("exercises" to listOf(newExercise))
                 docRef.set(data)
                     .addOnSuccessListener {
                         Toast.makeText(requireContext(), "운동내역 입력 완료", Toast.LENGTH_SHORT).show()
                         exerciseNameEditText.text.clear()
                         exerciseTimeEditText.text.clear()
+                    }
+                    .addOnFailureListener { e2 ->
+                        Toast.makeText(requireContext(), "운동내역 입력 실패: ${e2.message}", Toast.LENGTH_SHORT).show()
                     }
             }
     }
@@ -247,5 +266,6 @@ class HomeFragment : Fragment() {
         }
     }
 }
+
 
 

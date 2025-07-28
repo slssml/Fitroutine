@@ -54,7 +54,6 @@
             android:hint="나이"
             android:inputType="number" />
 
-        <!-- 성별 라디오버튼 추가 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="48dp"
