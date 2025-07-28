@@ -38,7 +38,6 @@ class MypageFragment : Fragment() {
         binding.WeightStats.setOnClickListener { navigateToWeightStats() }
         binding.ExerciseStats.setOnClickListener { navigateToExerciseStats() }
         binding.MyRoutine.setOnClickListener { navigateToMyRoutine() }
-        binding.Favorites.setOnClickListener { navigateToFavorites() }
     }
 
     // Firestore에서 사용자 닉네임 가져와 텍스트뷰에 세팅
@@ -73,11 +72,6 @@ class MypageFragment : Fragment() {
             .replace(R.id.main_frame, MyRoutineFragment())
             .addToBackStack(null)
             .commit()
-    }
-
-    // 즐겨찾기 화면 전환
-    private fun navigateToFavorites() {
-
     }
 
     override fun onDestroyView() {
