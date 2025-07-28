@@ -18,7 +18,7 @@ class MypageFragment : Fragment() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
-    // 프래그먼트 뷰 생성 및 바인딩 설정
+    // 뷰 생성 및 바인딩 설정
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -80,7 +80,6 @@ class MypageFragment : Fragment() {
 
     }
 
-    // 뷰가 화면에서 제거될 때 바인딩 해제
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

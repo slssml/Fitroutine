@@ -34,7 +34,7 @@ class WeightStatsFragment : Fragment() {
         val recordsRef = db.collection("users").document(uid).collection("dailyRecords")
 
         recordsRef.get().addOnSuccessListener { snapshot ->
-            val weightData = mutableListOf<Pair<String, Float>>() // 날짜와 체중 저장용 리스트
+            val weightData = mutableListOf<Pair<String, Float>>()
 
             // 각 문서에서 날짜와 체중 추출
             for (doc in snapshot.documents) {
@@ -45,11 +45,11 @@ class WeightStatsFragment : Fragment() {
                 }
             }
 
-            // 날짜 순으로 정렬
+            // 날짜 순 정렬
             val sortedData = weightData.sortedBy { it.first }
-            val entries = mutableListOf<Entry>()  // 그래프에 그릴 데이터 리스트
-            val colors = mutableListOf<Int>()     // 각 점 색상 리스트
-            val labels = mutableListOf<String>()  // X축 라벨 리스트
+            val entries = mutableListOf<Entry>()
+            val colors = mutableListOf<Int>()
+            val labels = mutableListOf<String>()
 
             // 정렬된 데이터 반복 처리
             for (i in sortedData.indices) {
@@ -81,7 +81,7 @@ class WeightStatsFragment : Fragment() {
         }
     }
 
-    // 그래프 그리기 함수
+    // 그래프 그리기
     private fun drawGraph(entries: List<Entry>, labels: List<String>, pointColors: List<Int>) {
         val dataSet = LineDataSet(entries, "체중 (kg)")
         dataSet.valueTextSize = 10f
@@ -106,9 +106,9 @@ class WeightStatsFragment : Fragment() {
             }
         }
 
-        lineChart.axisRight.isEnabled = false  // Y축 비활성화
-        lineChart.description.text = "날짜별 체중 변화" // 차트 설명
-        lineChart.invalidate() // 차트 갱신
+        lineChart.axisRight.isEnabled = false
+        lineChart.description.text = "날짜별 체중 변화"
+        lineChart.invalidate()
     }
 }
 

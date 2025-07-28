@@ -96,10 +96,15 @@
             </LinearLayout>
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/achievementRateTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="80% 달성!"
-                android:textSize="15sp" />
+                android:text="0% 달성!"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                />
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"

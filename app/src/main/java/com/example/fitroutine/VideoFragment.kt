@@ -1,59 +1,51 @@
 package com.example.fitroutine
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [VideoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class VideoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    // XML 레이아웃과 연결
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_video, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment VideoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            VideoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // 운동 부위 버튼 ID 리스트
+        val buttons = listOf(
+            R.id.ShoulderButton,
+            R.id.BackButton,
+            R.id.HipButton,
+            R.id.ArmButton,
+            R.id.ThighButton,
+            R.id.Full_BodyButton,
+            R.id.CardioButton,
+            R.id.StretchingButton
+        )
+
+        // 각 버튼에 공통 클릭 이벤트 등록
+        buttons.forEach { id ->
+            view.findViewById<Button>(id).setOnClickListener { buttonView ->
+                val category = (buttonView as Button).text.toString() // 예: "어깨", "팔" 등
+
+                // VideoListFragment 인스턴스를 category와 함께 생성
+                val fragment = VideoListFragment.newInstance(category)
+
+                // Fragment 전환
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frame, fragment)
+                    .addToBackStack(null)
+                    .commit()
             }
+        }
     }
 }
