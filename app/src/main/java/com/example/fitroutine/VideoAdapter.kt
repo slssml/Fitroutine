@@ -1,5 +1,6 @@
 package com.example.fitroutine
 
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ class VideoAdapter(private val items: List<VideoItem>) :
     // 영상 항목의 뷰를 저장하고 재사용
     class VideoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val thumbnail: ImageView = itemView.findViewById(R.id.image_thumbnail)
-        val title: TextView = itemView.findViewById(R.id.text_title)
+        val title: TextView = itemView.findViewById(R.id.youtubeTitle)
     }
 
     // 아이템 레이아웃을 inflater를 통해 생성하고 ViewHolder로 반환
@@ -47,6 +48,12 @@ class VideoAdapter(private val items: List<VideoItem>) :
                 .into(holder.thumbnail)
         } else {    // 썸네일 로딩 실패시 기본 썸네일 출력
             holder.thumbnail.setImageResource(R.drawable.default_thumbnail)
+        }
+
+        // 클릭 시 유튜브 url 연결
+        holder.itemView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.youtubeUrl))
+            holder.itemView.context.startActivity(intent)
         }
     }
     override fun getItemCount() = items.size
