@@ -56,7 +56,14 @@ class MyRoutineAdapter(
     }
 
     fun updateList(newList: List<Routine>) {
+        // 기존 checkedMap 상태를 유지하면서 새로운 루틴에 대해서만 false로 초기화
+        val newCheckedMap = mutableMapOf<String, Boolean>()
+        for (routine in newList) {
+            newCheckedMap[routine.id] = checkedMap[routine.id] ?: false
+        }
+
         routineList = newList.toMutableList()
+        checkedMap = newCheckedMap
         notifyDataSetChanged()
     }
 }
