@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:paddingTop="20dp"
+    android:paddingTop="40dp"
     android:paddingBottom="50dp"
     tools:context=".HomeFragment">
 
@@ -35,21 +36,30 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- 마이핏루틴 제목 -->
+                <!-- 목표 설정 -->
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="31dp"
                     android:layout_marginTop="20dp"
                     android:src="@drawable/routine" />
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="마이핏루틴"
+                    android:text="오늘의 핏루틴 목표 설정"
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="5dp"
                     android:textSize="18sp"
                     android:textStyle="bold" />
+
             </LinearLayout>
+
+            <!-- 목표 추가 버튼 -->
+            <Button
+                android:id="@+id/addTdRoutineBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="추가"
+                android:backgroundTint="#6495ED"/>
 
             <!-- 루틴 목록 -->
             <LinearLayout
@@ -79,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- 오늘의 목표 -->
+                <!-- 오늘의 목표 달성률 -->
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="31dp"
@@ -103,8 +113,6 @@
                 android:textSize="16sp"
                 android:layout_marginTop="16dp"
                 />
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -132,6 +140,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <!-- 체중 입력 받기 -->
                 <EditText
                     android:id="@+id/weightInput"
                     android:layout_width="wrap_content"
@@ -145,6 +154,7 @@
                     android:textSize="15sp" />
             </LinearLayout>
 
+            <!-- 체중 저장 버튼 -->
             <Button
                 android:id="@+id/addWeightButton"
                 android:layout_width="wrap_content"
@@ -173,6 +183,7 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- 운동 이름 입력받기 -->
             <EditText
                 android:id="@+id/exerciseNameEditText"
                 android:layout_width="match_parent"
@@ -183,6 +194,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <!-- 운동 시간 입력받기 -->
                 <EditText
                     android:id="@+id/exerciseTimeEditText"
                     android:layout_width="wrap_content"
@@ -197,6 +209,7 @@
                     android:textSize="15sp" />
             </LinearLayout>
 
+            <!-- 운동 기록 저장 버튼 -->
             <Button
                 android:id="@+id/addExerciseButton"
                 android:layout_width="wrap_content"
