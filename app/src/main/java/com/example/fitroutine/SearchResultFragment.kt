@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,7 @@ class SearchResultFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_video_list, container, false)
     }
 
+    // 영상 탭 검색 결과 출력
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -38,6 +40,10 @@ class SearchResultFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.recyclerView_video)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        if (results.isEmpty()) {
+            Toast.makeText(requireContext(), "\"$query\"에 대한 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+        }
 
         adapter = VideoAdapter(results)
         recyclerView.adapter = adapter
