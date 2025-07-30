@@ -42,4 +42,31 @@ class VideoRepository (context: Context) {
         db.close()
         return videoList
     }
+
+    fun searchVideosByTitle(query: String): List<VideoItem> {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            "videos",
+            null,
+            "title LIKE ?",
+            arrayOf("%$query%"),
+            null, null, null
+        )
+
+        val videoList = mutableListOf<VideoItem>()
+        while (cursor.moveToNext()) {
+            videoList.add(
+                VideoItem(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    title = cursor.getString(cursor.getColumnIndexOrThrow("title")),
+                    youtubeUrl = cursor.getString(cursor.getColumnIndexOrThrow("youtubeUrl")),
+                    category = cursor.getString(cursor.getColumnIndexOrThrow("category"))
+                )
+            )
+        }
+
+        cursor.close()
+        db.close()
+        return videoList
+    }
 }

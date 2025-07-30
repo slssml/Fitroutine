@@ -10,8 +10,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class VideoAdapter(private val items: List<VideoItem>) :
+class VideoAdapter(private var items: List<VideoItem>) :
     RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
+
+    // 데이터 갱신
+    fun updateData(newItems: List<VideoItem>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 
     // 영상 항목의 뷰를 저장하고 재사용
     class VideoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

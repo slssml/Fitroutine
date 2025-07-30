@@ -68,4 +68,14 @@ class VideoListFragment : Fragment() {
         adapter = VideoAdapter(videoList)
         recyclerView.adapter = adapter
     }
+
+    fun refreshList() {
+        val category = arguments?.getString("category") ?: return
+        val repository = VideoRepository(requireContext())
+        val newVideoList = repository.getVideosByCategory(category)
+
+        if (::adapter.isInitialized) {
+            adapter.updateData(newVideoList)
+        }
+    }
 }
