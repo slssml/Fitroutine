@@ -67,9 +67,14 @@ class HomeFragment : Fragment() {
         addExerciseButton = view.findViewById(R.id.addExerciseButton)
 
         // 어댑터 설정 : 오늘 선택된 루틴 리스트, 체크 상태, 체크 상태 변경 콜백, 삭제 콜백 전달
-        routineAdapter = MyRoutineAdapter(todayRoutineList, checkedStatus, ::saveRoutineStatus) {
-                routine -> showDeleteDialog(routine)
-        }
+        routineAdapter = MyRoutineAdapter(
+            todayRoutineList,
+            checkedStatus,
+            ::saveRoutineStatus,
+            showCheckbox = true,
+            onLongClick = { routine -> showDeleteDialog(routine) }
+        )
+
 
         // RecyclerView에 레이아웃 매니저와 어댑터 설정
         routineRecyclerView.layoutManager = LinearLayoutManager(requireContext())

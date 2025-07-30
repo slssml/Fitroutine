@@ -13,6 +13,15 @@ class VideoDBHelper(context: Context) : SQLiteOpenHelper(context, "video_db", nu
             category TEXT NOT NULL) 
             """.trimIndent()
         )
+
+        db.execSQL("""
+        CREATE TABLE routine_video (
+            routineId TEXT NOT NULL,
+            videoId INTEGER NOT NULL,
+            PRIMARY KEY (routineId, videoId)
+        )
+    """.trimIndent())
+
     }
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS videos")

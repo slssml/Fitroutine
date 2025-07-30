@@ -65,7 +65,8 @@ class VideoListFragment : Fragment() {
             Toast.makeText(context, "$category 영상이 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
-        adapter = VideoAdapter(videoList)
+        val adapter = VideoAdapter(requireContext(), videoList, hideAddButton = false) // 첫 번째 인자로 context 넣기
+
         recyclerView.adapter = adapter
     }
 

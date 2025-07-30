@@ -1,6 +1,8 @@
 package com.example.fitroutine
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.*
@@ -43,7 +45,9 @@ class MyRoutineFragment : Fragment() {
             routineList,
             showCheckbox = false,
             onLongClick = { routine ->
-                showDeleteDialog(routine)
+                showDeleteDialog(routine)},
+            onItemClick = { routine ->
+                loadVideosForRoutine(routine.id)
             }
         )
 
@@ -173,6 +177,39 @@ class MyRoutineFragment : Fragment() {
                 Toast.makeText(requireContext(), "삭제 실패: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun loadVideosForRoutine(routineId: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        Firebase.firestore.collection("users")
+            .document(uid)
+            .collection("routines")
+            .document(routineId)
+            .collection("videos")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val videoList = snapshot.map { doc ->
+                    VideoItem(
+                        id = 0,
+                        title = doc.getString("title") ?: "제목 없음",
+                        youtubeUrl = doc.getString("youtubeUrl") ?: "",
+                        category = ""
+                    )
+                }
+                if (videoList.isEmpty()) {
+                    Toast.makeText(requireContext(), "루틴에 등록된 영상이 없습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    val fragment = RoutineVideoListFragment.newInstance(ArrayList(videoList))
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.main_frame, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "영상 목록을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
 }
 
 

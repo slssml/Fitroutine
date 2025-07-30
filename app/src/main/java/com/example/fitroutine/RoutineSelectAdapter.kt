@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class RoutineSelectAdapter(
     private var routineList: List<Routine>,
-    private val selectedMap: MutableMap<String, Boolean> = mutableMapOf()
+    private val selectedMap: MutableMap<String, Boolean> = mutableMapOf(),
+    private var onItemClick: ((Routine) -> Unit)? = null,
+    private val showCheckbox: Boolean = true
 ) : RecyclerView.Adapter<RoutineSelectAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,13 +33,17 @@ class RoutineSelectAdapter(
         holder.routineText.text =
             "${routine.routineName} / ${routine.time} / ${routine.days.joinToString(", ")}"
 
+        holder.checkBox.visibility = if (showCheckbox) View.VISIBLE else View.GONE
+
         holder.checkBox.setOnCheckedChangeListener(null)
         holder.checkBox.isChecked = selectedMap[routine.id] ?: false
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             selectedMap[routine.id] = isChecked
         }
+
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(routine)
+        }
     }
-
-
 }

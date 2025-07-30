@@ -39,7 +39,8 @@ class SearchResultFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView_video)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        adapter = VideoAdapter(results)
+        val adapter = VideoAdapter(requireContext(), results) // 첫 번째 인자로 context 넣기
+
         recyclerView.adapter = adapter
     }
 }

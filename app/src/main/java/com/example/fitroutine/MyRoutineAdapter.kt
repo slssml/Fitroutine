@@ -12,7 +12,8 @@ class MyRoutineAdapter(
     private var checkedMap: MutableMap<String, Boolean> = mutableMapOf(),  // 루틴별 체크 상태 저장
     private val onCheckChanged: (String, Boolean) -> Unit = { _, _ -> },  // 체크 상태 변경 시 콜백
     private val showCheckbox: Boolean = true,                            // 체크박스 노출 여부 제어
-    private val onLongClick: ((Routine) -> Unit)? = null                 // 롱클릭 시 콜백
+    private val onLongClick: ((Routine) -> Unit)? = null,                 // 롱클릭 시 콜백
+    private val onItemClick: ((Routine) -> Unit)? = null
 ) : RecyclerView.Adapter<MyRoutineAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -46,6 +47,10 @@ class MyRoutineAdapter(
         holder.itemView.setOnLongClickListener {
             onLongClick?.invoke(routine)
             true
+        }
+
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(routine)
         }
     }
 
