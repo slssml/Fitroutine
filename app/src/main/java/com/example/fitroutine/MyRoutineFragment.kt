@@ -15,15 +15,18 @@ import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
+// 루틴 데이터 클래스
 data class Routine(
     val id: String = UUID.randomUUID().toString(),       // 고유 ID 자동 생성
-    val time: String = "",                                // 시간
-    val days: List<String> = emptyList(),                 // 선택 요일
-    val routineName: String = ""                           // 루틴 이름
+    val time: String = "",                               // 시간
+    val days: List<String> = emptyList(),                // 선택 요일
+    val routineName: String = ""                         // 루틴 이름
 )
 
+// 루틴 관리 프래그먼트
 class MyRoutineFragment : Fragment() {
 
+    // UI 요소
     private lateinit var routineRecyclerView: RecyclerView
     private lateinit var addRoutineButton: Button
     private lateinit var emptyTextView: TextView
@@ -37,15 +40,19 @@ class MyRoutineFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_my_routine, container, false)
 
+        // 뷰 초기화
         routineRecyclerView = view.findViewById(R.id.recyclerViewRoutines)
         addRoutineButton = view.findViewById(R.id.AddRoutine)
         emptyTextView = view.findViewById(R.id.emptyTextView)
 
+        // 어댑터 설정 (체크박스는 표시하지 않음)
         adapter = MyRoutineAdapter(
             routineList,
             showCheckbox = false,
+            // 롱클릭 시 삭제 다이얼로그
             onLongClick = { routine ->
                 showDeleteDialog(routine)},
+            //클릭 시 영상 목록 로딩
             onItemClick = { routine ->
                 loadVideosForRoutine(routine.id)
             }
@@ -54,10 +61,12 @@ class MyRoutineFragment : Fragment() {
         routineRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         routineRecyclerView.adapter = adapter
 
+        // 루틴 추가 버튼 클릭 시 다이얼로그
         addRoutineButton.setOnClickListener {
             showAddRoutineDialog()
         }
 
+        // Firebase에서 루틴 불러오기
         loadRoutinesFromFirebase()
         return view
     }
@@ -68,6 +77,7 @@ class MyRoutineFragment : Fragment() {
         val timePicker = dialogView.findViewById<TimePicker>(R.id.timePicker)
         val editName = dialogView.findViewById<EditText>(R.id.editRoutineName)
 
+        // 요일 체크박스 리스트
         val checkBoxes = listOf(
             dialogView.findViewById<CheckBox>(R.id.cbSun),
             dialogView.findViewById<CheckBox>(R.id.cbMon),
@@ -83,6 +93,7 @@ class MyRoutineFragment : Fragment() {
             .setCancelable(false)
             .create()
 
+        // 저장 버튼 클릭 시 루틴 정보 수집 및 저장
         dialogView.findViewById<Button>(R.id.btnSave).setOnClickListener {
             val hour: Int
             val minute: Int
@@ -103,6 +114,7 @@ class MyRoutineFragment : Fragment() {
             }
             val time = SimpleDateFormat("a h:mm", Locale.getDefault()).format(cal.time)
 
+            // 루틴 객체 생성 후 리스트 및 Firebase 저장
             val routine = Routine(time = time, days = selectedDays, routineName = routineName)
             routineList.add(routine)
             saveRoutineToFirebase(routine)
@@ -118,7 +130,7 @@ class MyRoutineFragment : Fragment() {
         dialog.show()
     }
 
-    // Firebase에 루틴 저장
+    // Firebase에 루틴 정보 저장
     private fun saveRoutineToFirebase(routine: Routine) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         Firebase.firestore.collection("users")
@@ -128,7 +140,7 @@ class MyRoutineFragment : Fragment() {
             .set(routine)
     }
 
-    // Firebase에서 루틴 불러오기
+    // Firebase에서 루틴 목록 불러오기
     private fun loadRoutinesFromFirebase() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         Firebase.firestore.collection("users")
@@ -143,6 +155,7 @@ class MyRoutineFragment : Fragment() {
                 }
                 adapter.notifyDataSetChanged()
 
+                // 비어있을 경우 안내 메시지
                 emptyTextView.visibility = if (routineList.isEmpty()) View.VISIBLE else View.GONE
             }
     }
@@ -159,7 +172,7 @@ class MyRoutineFragment : Fragment() {
             .show()
     }
 
-    // Firebase에서 루틴 삭제 처리
+    // Firebase에서 루틴 삭제 처리 및 리스트 반영
     private fun deleteRoutine(routine: Routine) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         Firebase.firestore.collection("users")
@@ -178,6 +191,7 @@ class MyRoutineFragment : Fragment() {
             }
     }
 
+    // 선택한 루틴의 영상 목록을 불러와 프래그먼트로 이동
     private fun loadVideosForRoutine(routineId: String) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         Firebase.firestore.collection("users")

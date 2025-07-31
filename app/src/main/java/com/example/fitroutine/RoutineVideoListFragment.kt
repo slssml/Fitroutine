@@ -1,5 +1,6 @@
 package com.example.fitroutine
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +14,15 @@ import androidx.recyclerview.widget.RecyclerView
 // 루틴에 추가된 영상 목록을 보여주는 프래그먼트
 class RoutineVideoListFragment : Fragment() {
 
-    private lateinit var titleTextView: TextView
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: VideoAdapter
-    private var videoList: List<VideoItem> = emptyList()
+    private lateinit var titleTextView: TextView     // 화면 상단 텍스트
+    private lateinit var recyclerView: RecyclerView  // 영상 리사이클뷰
+    private lateinit var adapter: VideoAdapter       // 어댑터
+    private var videoList: List<VideoItem> = emptyList()  // 현재 루틴에 포함된 영상 목록
 
     companion object {
-        private const val ARG_VIDEOS = "videos"
+        private const val ARG_VIDEOS = "videos"  // 번들 키
 
+        // 외부에서 이 프래그먼트 생성할 때 영상 목록 함께 전달
         fun newInstance(videos: ArrayList<VideoItem>): RoutineVideoListFragment {
             val fragment = RoutineVideoListFragment()
             val bundle = Bundle()
@@ -42,10 +44,29 @@ class RoutineVideoListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         titleTextView = view.findViewById(R.id.videoListTitle)
         titleTextView.text = "루틴 영상"
+
         recyclerView = view.findViewById(R.id.recyclerView_video)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = VideoAdapter(requireContext(), videoList, hideAddButton = true)
+
+        // 어댑터 초기화 (영상 추가 버튼 숨김, 삭제 기능)
+        adapter = VideoAdapter(requireContext(), videoList, hideAddButton = true) { videoToDelete ->
+            showDeleteConfirmDialog(videoToDelete)
+        }
         recyclerView.adapter = adapter
     }
+
+    // 영상 삭제 확인 다이얼로그
+    private fun showDeleteConfirmDialog(video: VideoItem) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("영상 삭제")
+            .setMessage("이 영상을 루틴에서 삭제하시겠습니까?")
+            .setPositiveButton("삭제") { _, _ ->
+                videoList = videoList.filter { it != video }
+                adapter.updateData(videoList)
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
 }
 

@@ -1,5 +1,6 @@
 package com.example.fitroutine
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -108,7 +109,21 @@ class VideoListFragment : Fragment() {
             Toast.makeText(context, "$category 영상이 없습니다.", Toast.LENGTH_SHORT).show()
         }
 
-        val adapter = VideoAdapter(requireContext(), videoList, hideAddButton = false) // 첫 번째 인자로 context 넣기
+        adapter = VideoAdapter(requireContext(), videoList, hideAddButton = false)
+
+        adapter.onItemLongClick = { video ->
+            AlertDialog.Builder(requireContext())
+                .setTitle("영상 삭제")
+                .setMessage("정말 이 영상을 삭제하시겠습니까?")
+                .setPositiveButton("삭제") { _, _ ->
+                    val repository = VideoRepository(requireContext())
+                    repository.delete(video)  // DB에서 삭제
+                    refreshList()            // UI 갱신
+                    Toast.makeText(context, "삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("취소", null)
+                .show()
+        }
 
         recyclerView.adapter = adapter
     }

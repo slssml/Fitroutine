@@ -2,6 +2,7 @@ package com.example.fitroutine
 
 import android.content.ContentValues
 import android.content.Context
+import android.util.Log
 
 class VideoRepository (context: Context) {
     private val dbHelper = VideoDBHelper(context)
@@ -69,4 +70,13 @@ class VideoRepository (context: Context) {
         db.close()
         return videoList
     }
+
+    fun delete(video: VideoItem) {
+        val db = dbHelper.writableDatabase
+        val deletedCount = db.delete("videos", "youtubeUrl = ?", arrayOf(video.youtubeUrl))
+        Log.d("VideoRepository", "Deleted rows count: $deletedCount")
+        db.close()
+    }
+
+
 }

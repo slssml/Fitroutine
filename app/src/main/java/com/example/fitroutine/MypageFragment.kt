@@ -9,8 +9,10 @@ import com.example.fitroutine.databinding.FragmentMypageBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+// 마이페이지 화면 프래그먼트
 class MypageFragment : Fragment() {
 
+    // 뷰 바인딩을 위한 바인딩 변수
     private var _binding: FragmentMypageBinding? = null
     private val binding get() = _binding!!
 
@@ -34,19 +36,23 @@ class MypageFragment : Fragment() {
         // Firestore에서 닉네임 불러오기
         loadNicknameFromFirebase()
 
-        // 버튼 클릭 연결
+        // 체중 통계 버튼 클릭 시
         binding.WeightStats.setOnClickListener { navigateToWeightStats() }
+
+        // 운동 통계 버튼 클릭 시
         binding.ExerciseStats.setOnClickListener { navigateToExerciseStats() }
+
+        // 마이루틴 버튼 클릭 시
         binding.MyRoutine.setOnClickListener { navigateToMyRoutine() }
     }
 
     // Firestore에서 사용자 닉네임 가져와 텍스트뷰에 세팅
     private fun loadNicknameFromFirebase() {
-        val uid = auth.currentUser?.uid ?: return
+        val uid = auth.currentUser?.uid ?: return   // 로그인된 사용자 UID 확인
         db.collection("users").document(uid).get()
             .addOnSuccessListener { document ->
-                val name = document.getString("name") ?: ""
-                binding.name.text = "$name 님 💪"
+                val name = document.getString("name") ?: ""   // name 필드 가져오기
+                binding.name.text = "$name 님 💪"                    // 닉네임 표시
             }
     }
 

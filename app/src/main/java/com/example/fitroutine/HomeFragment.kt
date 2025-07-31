@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
+// 홈 화면 프래그먼트
 class HomeFragment : Fragment() {
 
     // UI 요소 선언

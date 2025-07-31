@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+// 검색 결과 화면 프래그먼트
 class SearchResultFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: VideoAdapter
@@ -17,6 +18,7 @@ class SearchResultFragment : Fragment() {
     private lateinit var results: List<VideoItem>
 
     companion object {
+        // 프래그먼트 생성하면서 검색어와 검색 결과 데이터 전
         fun newInstance(query: String, results: List<VideoItem>): SearchResultFragment {
             val fragment = SearchResultFragment()
             fragment.query = query
@@ -41,6 +43,7 @@ class SearchResultFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView_video)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // 검색 결과 없을 경우 메시지
         if (results.isEmpty()) {
             Toast.makeText(requireContext(), "\"$query\"에 대한 결과가 없습니다.", Toast.LENGTH_SHORT).show()
         }

@@ -8,12 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+// 회원가입 화면 액티비티
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth        // Firebase 인증 객체
     private lateinit var db: FirebaseFirestore      // Firestore DB 객체
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
@@ -28,6 +28,7 @@ class SignupActivity : AppCompatActivity() {
         val genderRadioGroup = findViewById<RadioGroup>(R.id.genderRadioGroup)
         val signupButton = findViewById<Button>(R.id.signupSubmitButton)
 
+        // 회원가입 버튼 클릭 시
         signupButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
@@ -41,6 +42,7 @@ class SignupActivity : AppCompatActivity() {
             } else null
             val gender = selectedGenderRadioButton?.text.toString()
 
+            // 이메일, 비밀번호, 닉네입 미입력 시 메시지
             if (email.isEmpty() || password.isEmpty() || name.isEmpty() || age.isEmpty()) {
                 Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

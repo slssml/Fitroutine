@@ -11,6 +11,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+// 체중을 날짜 별로 보여주는 프래그먼트
 class WeightStatsFragment : Fragment() {
 
     // 라인차트 뷰 변수 선언

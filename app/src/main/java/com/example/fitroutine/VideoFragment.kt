@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 
+// 영상 화면 프래그먼트
 class VideoFragment : Fragment() {
 
     override fun onCreateView(
